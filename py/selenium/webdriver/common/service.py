@@ -191,6 +191,7 @@ class Service(ABC):
         cmd.extend(self.command_line_args())
         close_file_descriptors = self.popen_kw.pop("close_fds", system() != "Windows")
         try:
+            creation_flags = subprocess.CREATE_NO_WINDOW | self.creation_flags
             self.process = subprocess.Popen(
                 cmd,
                 env=self.env,
@@ -198,7 +199,7 @@ class Service(ABC):
                 stdout=self.log_file,
                 stderr=self.log_file,
                 stdin=PIPE,
-                creationflags=self.creation_flags,
+                creationflags=creation_flags,
                 **self.popen_kw,
             )
             logger.debug(f"Started executable: `{self._path}` in a child process with pid: {self.process.pid}")
